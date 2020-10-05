@@ -1,6 +1,7 @@
 import java.util.*;
+import java.util.stream.Collectors;
 public class AddressBookMain {
-static HashMap<String, AddressBook> mp1 = new HashMap<>(); 
+	static HashMap<String, AddressBook> mp1 = new HashMap<>(); 
 	static HashMap<String, contactInfo> mp = new HashMap<>();
 	//Method to add new contact
 	public static contactInfo createAddressBook() {
@@ -80,7 +81,15 @@ static HashMap<String, AddressBook> mp1 = new HashMap<>();
 				System.out.println("The address book has been added to the system");
 			}
 		}
-		
+	}
+	public static void searchPersonCityState(String city, String state) {
+		List<AddressBook> listAB = mp1.values().stream().collect(Collectors.toList());
+		for(int i=0;i<listAB.size();i++) {
+			List<contactInfo> names = listAB.get(i).getAddressBook().values().stream().filter(e->state.equals(e.getState())).collect(Collectors.toList());
+			for(int j=0;j<names.size();i++) {
+				System.out.println(names.get(j).getFirstName());
+			}
+		}
 	}
 	//Main method
 	public static void main(String[] args) {
@@ -95,6 +104,7 @@ static HashMap<String, AddressBook> mp1 = new HashMap<>();
 		System.out.println("3. Delete a contact");
 		System.out.println("4. Bulk add contacts in the Address Book");
 		System.out.println("5. Add multiple address book");
+		System.out.println("6. Search people in a city or a state");
 		int choice = sc.nextInt();
 		switch(choice) {
 		case 1: 
@@ -123,6 +133,11 @@ static HashMap<String, AddressBook> mp1 = new HashMap<>();
 				newAddressBook();
 			}
 			System.out.println("All address books have been added to the system ");
+		case 6:
+			System.out.println("Please enter the name of the city and the state");
+			String city = sc.next();
+			String state = sc.next();
+			searchPersonCityState(city,state);
 		default: 
 			break;
 		}
