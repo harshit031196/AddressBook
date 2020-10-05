@@ -1,8 +1,9 @@
 import java.util.*;
-public class bookadress {
-static HashMap<String, contactInfo> mp = new HashMap<>();
+public class AddressBookMain {
+static HashMap<String, AddressBook> mp1 = new HashMap<>(); 
+	static HashMap<String, contactInfo> mp = new HashMap<>();
 	//Method to add new contact
-	public static contactInfo addContact() {
+	public static contactInfo createAddressBook() {
 		Scanner sc = new Scanner(System.in);
 		contactInfo contact = new contactInfo();
 		
@@ -22,8 +23,8 @@ static HashMap<String, contactInfo> mp = new HashMap<>();
 		contact.setPhoneNumber(sc.next());
 		System.out.println("Enter the email address");
 		contact.setEmail(sc.next());
-		
 		return contact;
+		
 	}
 	//Method to edit the already existing contact
 	public static void editInfo() {
@@ -31,7 +32,7 @@ static HashMap<String, contactInfo> mp = new HashMap<>();
 		System.out.println("Please enter the first name of the contact you want to edit the details of");
 		String find = sc.next();
 		if(mp.containsKey(find)) {
-			contactInfo updated = addContact();
+			contactInfo updated = createAddressBook();
 			mp.remove(find);
 			mp.put(updated.getFirstName(), updated);
 			System.out.println("The contact is updated");
@@ -57,32 +58,51 @@ static HashMap<String, contactInfo> mp = new HashMap<>();
 		System.out.println("Please enter the total number of contacts that you want to add");
 		int count = sc.nextInt();
 		for(int i=0;i<count;i++) {
-			contactInfo a = addContact();
+			contactInfo a = createAddressBook();
 			mp.put(a.getFirstName(), a);
 		}
 		System.out.println("All the contacts are added");
 	}
+	//Method to add a new address book
+	public static void newAddressBook() {
+		AddressBook ab = new AddressBook();
+		System.out.println("Please enter a unique name for the address book");
+		Scanner sc = new Scanner(System.in);
+		String name = sc.next();
+		boolean flag=false;
+		while(!flag) {
+			if(mp1.containsKey(name)) {
+				System.out.println("The following name for an address book already exists. Please enter a unique name");
+			}else {
+				flag=true;
+				ab.setAddressBook(new HashMap<String,contactInfo>());
+				mp1.put(name, ab);
+				System.out.println("The address book has been added to the system");
+			}
+		}
+		
+	}
 	//Main method
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		AddressBook ab1 = new AddressBook();
+		ab1.setAddressBook(new HashMap<String,contactInfo>());
 		System.out.println("Welcome to Address Book");
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Please enter the name of the address book");
-		AddressBook ab = new AddressBook();
-		
 		System.out.println("Please choose from the following options and enter the number corresponding to that choice");
 		System.out.println("1. Add a contact into the Address Book");
 		System.out.println("2. Edit a contact already present in the Address Book");
 		System.out.println("3. Delete a contact");
 		System.out.println("4. Bulk add contacts in the Address Book");
+		System.out.println("5. Add multiple address book");
 		int choice = sc.nextInt();
 		switch(choice) {
 		case 1: 
-			contactInfo c = addContact();
-			if(mp.get(c.getFirstName()) == null) {
+			contactInfo c = createAddressBook();
+			if(ab1.getAddressBook().keySet().stream().anyMatch(e->e.equals(c.getFirstName()))) {
 				System.out.println("The person is already present in the address book");
 			}else {
-				mp.put(c.getFirstName(),c);
+				ab1.getAddressBook().put(c.getFirstName(),c);
 				System.out.println("The contact is added");
 			}
 			
@@ -96,6 +116,13 @@ static HashMap<String, contactInfo> mp = new HashMap<>();
 		case 4: 
 			multiplePeople();
 			break;
+		case 5:
+			System.out.println("Please enter the number of address books that you want to enter");
+			int n = sc.nextInt();
+			for(int i=0;i<n;i++) {
+				newAddressBook();
+			}
+			System.out.println("All address books have been added to the system ");
 		default: 
 			break;
 		}
