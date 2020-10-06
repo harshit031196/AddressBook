@@ -82,6 +82,7 @@ public class AddressBookMain {
 			}
 		}
 	}
+	//Method to search Person by city or state
 	public static void searchPersonCityState(String city, String state) {
 		List<AddressBook> listAB = mp1.values().stream().collect(Collectors.toList());
 		for(int i=0;i<listAB.size();i++) {
@@ -89,6 +90,14 @@ public class AddressBookMain {
 			for(int j=0;j<names.size();i++) {
 				System.out.println(names.get(j).getFirstName());
 			}
+		}
+	}
+	//Method to sort by name
+	public static void sortByName() {
+		List<AddressBook> listAB = mp1.values().stream().collect(Collectors.toList());
+		for(int i=0;i<listAB.size();i++) {
+			Map result = listAB.get(i).getAddressBook().entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+					(oldValue, newValue) -> oldValue, LinkedHashMap::new));
 		}
 	}
 	//Main method
@@ -105,6 +114,7 @@ public class AddressBookMain {
 		System.out.println("4. Bulk add contacts in the Address Book");
 		System.out.println("5. Add multiple address book");
 		System.out.println("6. Search people in a city or a state");
+		System.out.println("7. Sort by name");
 		int choice = sc.nextInt();
 		switch(choice) {
 		case 1: 
@@ -138,6 +148,8 @@ public class AddressBookMain {
 			String city = sc.next();
 			String state = sc.next();
 			searchPersonCityState(city,state);
+		case 7:
+			sortByName();
 		default: 
 			break;
 		}
