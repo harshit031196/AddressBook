@@ -10,6 +10,20 @@ public class contactInfo {
 	private String zip;
 	private String phoneNumber;
 	private String email;
+	
+	public contactInfo() {
+		
+	}
+	public contactInfo(String firstName, String lastName,String address,String city,String state,String zip,String phoneNumber,String email) {
+		this.firstName= firstName;
+		this.lastName = lastName;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.zip = zip;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+	}
 	public String getFirstName() {
 		return firstName;
 	}
@@ -58,5 +72,10 @@ public class contactInfo {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
+	@Override
+	public String toString() {
+		return "firstName =" + this.getFirstName() + ",lastname =" + this.getLastName() + ",address =" + this.getAddress()+ ",city =" + this.getCity()
+				+ ",state =" + this.getState()+ ",zip =" + this.getZip() + ",phonenumber =" + this.getPhoneNumber() + ",emailid ="
+				+ this.getEmail();
+	}
 }
