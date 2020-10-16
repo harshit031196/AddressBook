@@ -30,5 +30,9 @@ public class AddressBookMain {
 		for(Map.Entry m: mp1.entrySet()) {
 			((AddressBook) m.getValue()).readFromCSVFile(IOAddressBookService.FILE_IO);
 		}
+		for(Map.Entry m : mp1.entrySet()) {
+			((AddressBook) m.getValue()).writeIntoJSONFile(IOAddressBookService.FILE_IO);
+		}
 	}
+
 }

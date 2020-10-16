@@ -68,6 +68,11 @@ public class AddressBook {
 			System.out.println(contactList);
 		}
 	}
+	public void writeIntoJSONFile(IOAddressBookService fileIo) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+		if(fileIo.equals(IOAddressBookService.FILE_IO)) {
+			new AddressBookJSONService().writeToJson();
+		}
+	}
 	
 }
 
