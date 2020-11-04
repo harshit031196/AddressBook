@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.addressbooksystem.AddressBook.TYPE;
 import com.addressbooksystem.AddressBookService.IOTYPE;
 
 public class AddressBookServiceTest {
@@ -50,5 +51,14 @@ public class AddressBookServiceTest {
 		assertEquals(1, (int) contactCountByState.get("Maharashtra"));
 		assertEquals(1, (int) contactCountByState.get("Haryana"));
 		assertEquals(1, (int) contactCountByState.get("Tamil Nadu"));
+	}
+	@Test
+	public void givenNewContact_WhenAddedToDB_ShouldBeInSyncWithDB() {
+		AddressBookService addressBookService = new AddressBookService();
+		addressBookService.readAddressBook();
+		addressBookService.addContactToDB("Parth", "Agarwal", "WhiteField", "Bangalore", "Karnataka", "parth.agarwal@gmail.com",
+											235678L, 7890653487L, LocalDate.of(2020, 10, 29), TYPE.PROFESSION, TYPE.FAMILY);
+		boolean result = addressBookService.isContactInSyncWithDB(6);
+		assertTrue(result);
 	}
 }

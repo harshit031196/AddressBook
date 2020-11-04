@@ -197,5 +197,119 @@ public class AddressBookDBService {
 		String query = "SELECT COUNT(contact_id) as count, state FROM contact GROUP BY state";
 		return getContactCountByCityOrState(query, "state");
 	}
+	
+	public Contact addContactToDB(String firstName, String lastName, String address, String city, String state,
+			String email, long zip, long phoneNumber, LocalDate date, TYPE[] types) throws DatabaseException {
+		Connection connection = null;
+		int contactId = -1;
+		Contact contact = null;
+		
+		try {
+			connection = getConnection();
+			connection.setAutoCommit(false);
+		} catch (SQLException e) {
+			throw new DatabaseException("Error while setting Auto Commit", ExceptionType.AUTO_COMMIT_ERROR);
+		}
+		
+		contactId = addContact(connection, firstName, lastName, address, city, state, email, zip, phoneNumber, date);
+		boolean isSuccessfull = addToContactAddressBookTable(connection, contactId, types);
+		if(isSuccessfull) {
+			contact = new Contact(contactId, firstName, lastName, address, city, state, email, zip, phoneNumber, date);
+		}
+		try {
+			connection.commit();
+		} catch (SQLException e) {
+			throw new DatabaseException("Cannot Commit", ExceptionType.UNABLE_TO_COMMIT);
+		}finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					throw new DatabaseException("Cannot close connection object", ExceptionType.UNABLE_TO_CLOSE_CONNECTION);
+				}
+			}
+		}
+		return contact;
+	}
+	
+	private int addContact(Connection connection, String firstName, String lastName, String address, String city,
+			String state, String email, long zip, long phoneNumber, LocalDate date) throws DatabaseException {
+		int contactId = -1;
+		try(Statement statement = connection.createStatement()){
+			String query = String.format("INSERT INTO contact (date_added, first_name, last_name, phone_number, email)"+
+										  "VALUES ('%s', '%s', '%s', '%s', '%s')", date, firstName, lastName, phoneNumber, email);
+			int rowAffected = statement.executeUpdate(query, statement.RETURN_GENERATED_KEYS);
+			contactId = -1;
+			if(rowAffected == 1) {
+				ResultSet result = statement.getGeneratedKeys();
+				if(result.next()) {
+					contactId = result.getInt(1);
+				}
+			}
+		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException ex) {
+				throw new DatabaseException("Cannot Roll Back", ExceptionType.UNABLE_TO_ROLL_BACK);
+			}
+			throw new DatabaseException("Error while executing the query", ExceptionType.UNABLE_TO_EXECUTE_QUERY);
+		}
+		
+		try(Statement statement = connection.createStatement()){
+			String query = String.format("INSERT INTO contact_address (contact_id, address, city, state, zip)"+
+										"VALUES('%s', '%s', '%s', '%s', '%s')", contactId, address, city, state, zip);
+			statement.executeUpdate(query);
+		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException ex) {
+				throw new DatabaseException("Cannot Roll Back", ExceptionType.UNABLE_TO_ROLL_BACK);
+			}
+			throw new DatabaseException("Error while executing the query", ExceptionType.UNABLE_TO_EXECUTE_QUERY);
+		}
+		
+		return contactId;
+	}
+	/**
+	 * add contact to address_book_contact table
+	 */
+	private boolean addToContactAddressBookTable(Connection connection, int contactId, TYPE[] types) throws DatabaseException {
+		boolean flag = true;
+		try(Statement statement = connection.createStatement();){
+			for(TYPE type : types) {
+				int addressBookId = getAddressBookId(connection, type);
+				if(addressBookId != -1) {
+					String query = String.format("insert into address_book_contact (contact_id, book_id) "
+							+ "Values ('%s','%s')", contactId, addressBookId);
+					int rowAffected = statement.executeUpdate(query);
+					if(rowAffected != 1) {	
+						flag = false;
+					}
+				}
+			}
+			return flag;
+		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException ex) {
+				throw new DatabaseException("Cannot Roll Back", ExceptionType.UNABLE_TO_ROLL_BACK);
+			}
+			throw new DatabaseException("Error while executing the query", ExceptionType.UNABLE_TO_EXECUTE_QUERY);
+		}
+	}
+
+	private int getAddressBookId(Connection connection, TYPE type) throws DatabaseException {
+		int bookId = -1;
+		String query = "Select book_id from address_book where type = ?";
+		try(PreparedStatement statement = connection.prepareStatement(query);) {
+			statement.setString(1, type.toString());
+			ResultSet result = statement.executeQuery();
+			while(result.next()) bookId = result.getInt("book_id");
+			return bookId;
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			throw new DatabaseException("Error while executing the query", ExceptionType.UNABLE_TO_EXECUTE_QUERY);
+		}
+	}
 
 }

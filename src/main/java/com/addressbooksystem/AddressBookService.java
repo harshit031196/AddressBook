@@ -14,8 +14,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.addressbooksystem.AddressBook.TYPE;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import com.addressbooksystem.*;
+
 
 @FunctionalInterface
 interface AddKVpair {
@@ -491,5 +491,19 @@ public class AddressBookService {
 			System.out.println(e.getMessage());
 		}
 		return contactCountByState;
+	}
+	
+	public void addContactToDB(String firstName, String lastName, String address, String city, String state,
+			String email, long zip, long phoneNumber, LocalDate date, TYPE... types) {
+		try {
+			Contact contact = addressBookDBService.addContactToDB(firstName, lastName, address, city,
+																  state, email, zip, phoneNumber, date, types);
+			for(TYPE type : types) {
+				addressBooksDB.get(type).getContacts().add(contact);
+			}
+		} catch (DatabaseException e) {
+			System.out.println(e.getMessage());
+		}
+		
 	}
 }

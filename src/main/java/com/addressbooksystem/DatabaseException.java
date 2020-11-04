@@ -1,11 +1,9 @@
 package com.addressbooksystem;
 
+
+
 public class DatabaseException extends Exception {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2844461445938102959L;
 	ExceptionType type;
 	
 	public enum ExceptionType {
