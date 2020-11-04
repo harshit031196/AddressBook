@@ -236,8 +236,8 @@ public class AddressBookDBService {
 			String state, String email, long zip, long phoneNumber, LocalDate date) throws DatabaseException {
 		int contactId = -1;
 		try(Statement statement = connection.createStatement()){
-			String query = String.format("INSERT INTO contact (date_added, first_name, last_name, phone_number, email)"+
-										  "VALUES ('%s', '%s', '%s', '%s', '%s')", date, firstName, lastName, phoneNumber, email);
+			String query = String.format("INSERT INTO contact (date_added, first_name, last_name, phone_number, email,address,city,state,zip)"+
+										  "VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", date, firstName, lastName, phoneNumber, email,address,city,state,zip);
 			int rowAffected = statement.executeUpdate(query, statement.RETURN_GENERATED_KEYS);
 			contactId = -1;
 			if(rowAffected == 1) {
@@ -246,19 +246,6 @@ public class AddressBookDBService {
 					contactId = result.getInt(1);
 				}
 			}
-		} catch (SQLException e) {
-			try {
-				connection.rollback();
-			} catch (SQLException ex) {
-				throw new DatabaseException("Cannot Roll Back", ExceptionType.UNABLE_TO_ROLL_BACK);
-			}
-			throw new DatabaseException("Error while executing the query", ExceptionType.UNABLE_TO_EXECUTE_QUERY);
-		}
-		
-		try(Statement statement = connection.createStatement()){
-			String query = String.format("INSERT INTO contact_address (contact_id, address, city, state, zip)"+
-										"VALUES('%s', '%s', '%s', '%s', '%s')", contactId, address, city, state, zip);
-			statement.executeUpdate(query);
 		} catch (SQLException e) {
 			try {
 				connection.rollback();
