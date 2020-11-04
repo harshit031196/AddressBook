@@ -1,5 +1,7 @@
 package com.addressbooksystem;
 
+import java.time.LocalDate;
+
 public class Contact {
 	private int id;
 	private String firstName;
@@ -10,6 +12,7 @@ public class Contact {
 	private String email;
 	private long zip;
 	private long phoneNumber;
+	private LocalDate date;
 
 	public Contact(String firstName, String lastName, String address, String city, String state, String email, long zip,
 			long phoneNumber) {
@@ -27,6 +30,12 @@ public class Contact {
 			long phoneNumber) {
 		this(firstName, lastName, address, city, state, email, zip, phoneNumber);
 		this.id = id;
+	}
+	
+	public Contact(int id, String firstName, String lastName, String address, String city, String state, String email, long zip,
+			long phoneNumber, LocalDate date) {
+		this(id, firstName, lastName, address, city, state, email, zip, phoneNumber);
+		this.date = date;
 	}
 
 	public String getFirstName() {
