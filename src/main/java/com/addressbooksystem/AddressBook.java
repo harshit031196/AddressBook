@@ -1,78 +1,73 @@
 package com.addressbooksystem;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-
-
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import java.util.LinkedList;
 public class AddressBook {
-	public enum IOAddressBookService {
-		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
-	}
-	Map<String,contactInfo> Ab = new HashMap<String,contactInfo>();
-	ArrayList<contactInfo> list = new ArrayList<>();
+	private int id;
 	private String name;
-	public AddressBook() {
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Enter total contacts you want to add in address book");
-		int n = sc.nextInt();
-		while (n-->0) {
-			contactInfo contact = new contactInfo();
-			
-			System.out.println("Enter the first name");
-			contact.setFirstName(sc.next());
-			System.out.println("Enter the last name");
-			contact.setLastName(sc.next());
-			System.out.println("Enter the address");
-			contact.setAddress(sc.next());
-			System.out.println("Enter the city");
-			contact.setCity(sc.next());
-			System.out.println("Enter the state");
-			contact.setState(sc.next());
-			System.out.println("Enter the zip code");
-			contact.setZip(sc.next());
-			System.out.println("Enter the phone number");
-			contact.setPhoneNumber(sc.next());
-			System.out.println("Enter the email address");
-			contact.setEmail(sc.next());
-			list.add(contact);
-			this.Ab.put(contact.getFirstName(), contact);
-		}
+	TYPE type;
+	private LinkedList<Contact> contacts;
+
+	public enum TYPE {
+		FRIEND, FAMILY, PROFESSION, CULTURAL;
 	}
-	public void setAddressBook(Map<String,contactInfo> Ab) {
-		this.Ab=Ab;
+
+	public AddressBook(int id, String name, TYPE type) {
+		this.id = id;
+		this.name = name;
+		this.type = type;
+		this.contacts = new LinkedList<Contact>();
 	}
-	public Map<String,contactInfo> getAddressBook(){
-		return this.Ab;
+	
+	public AddressBook(int id, String name, TYPE type, LinkedList<Contact> contacts) {
+		this(id, name, type);
+		this.contacts = contacts;
 	}
+	
+	public int getId() {
+		return id;
+	}
+
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
+
+	public TYPE getType() {
+		return type;
 	}
-	public void writeIntoCSVFile(IOAddressBookService fileIo) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
-		if(fileIo.equals(IOAddressBookService.FILE_IO)) {
-			new AddressBookCSVService().writeToCSV(list);
-		}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
 	}
-	
-	public void readFromCSVFile(IOAddressBookService ioService) throws IOException {
-		if(ioService.equals(IOAddressBookService.FILE_IO)) {
-			ArrayList<contactInfo> contactList = (ArrayList<contactInfo>) new AddressBookCSVService().readToCSV();
-			System.out.println(contactList);
-		}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AddressBook other = (AddressBook) obj;
+		if (id != other.id)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
 	}
-	public void writeIntoJSONFile(IOAddressBookService fileIo) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
-		if(fileIo.equals(IOAddressBookService.FILE_IO)) {
-			new AddressBookJSONService().writeToJson();
-		}
+
+	public LinkedList<Contact> getContacts() {
+		return contacts;
 	}
-	
 }
 
